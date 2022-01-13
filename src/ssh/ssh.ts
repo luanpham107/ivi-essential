@@ -8,35 +8,23 @@ import * as fs from "fs";
 import * as crypto from "crypto";
 import * as ssh2 from 'ssh2';
 import * as ssh2_streams from 'ssh2-streams';
+import { Vcloud } from "../cloud/vcloud";
 
 declare var inspect: any;
 
 const configKeys = {
-    ARDUINO_COMMAND_PATH: "arduino.commandPath",
-    ADDITIONAL_URLS: "arduino.additionalUrls",
     LOG_LEVEL: "arduino.logLevel",
-    AUTO_UPDATE_INDEX_FILES: "arduino.autoUpdateIndexFiles",
-    ENABLE_USB_DETECTION: "arduino.enableUSBDetection",
-    DISABLE_TESTING_OPEN: "arduino.disableTestingOpen",
-    IGNORE_BOARDS: "arduino.ignoreBoards",
-    SKIP_HEADER_PROVIDER: "arduino.skipHeaderProvider",
     DEFAULT_BAUD_RATE: "arduino.defaultBaudRate",
-    USE_ARDUINO_CLI: "arduino.useArduinoCli",
     DISABLE_INTELLISENSE_AUTO_GEN: "arduino.disableIntelliSenseAutoGen",
+    IVI_DEFAULT_VCLOUD: "ivi.defaultVcloud"
 };
 
 export interface IVscodeSettings {
-    commandPath: string;
-    additionalUrls: string | string[];
     logLevel: string;
-    enableUSBDetection: boolean;
-    disableTestingOpen: boolean;
-    ignoreBoards: string[];
-    skipHeaderProvider: boolean;
     defaultBaudRate: number;
-    useArduinoCli: boolean;
     disableIntelliSenseAutoGen: boolean;
-
+    defaultVcloud: string;
+    defaultVcloudConfig(config: string): Vcloud;
     startSSHConnection(): void;
     updateAdditionalUrls(urls: string | string[]): void;
 }
@@ -53,54 +41,35 @@ export class VscodeSettings implements IVscodeSettings {
     private constructor() {
     }
 
-    public get commandPath(): string {
-        return this.getConfigValue<string>(configKeys.ARDUINO_COMMAND_PATH);
-    }
-
-    public get additionalUrls(): string | string[] {
-        return this.getConfigValue<string | string[]>(configKeys.ADDITIONAL_URLS);
+    public get defaultVcloud(): string {
+        return this.getConfigValue<string>(configKeys.IVI_DEFAULT_VCLOUD);
     }
 
     public get logLevel(): string {
         return this.getConfigValue<string>(configKeys.LOG_LEVEL) || "info";
     }
 
-    public get enableUSBDetection(): boolean {
-        return this.getConfigValue<boolean>(configKeys.ENABLE_USB_DETECTION);
-    }
-
-    public get disableTestingOpen(): boolean {
-        return this.getConfigValue<boolean>(configKeys.DISABLE_TESTING_OPEN);
-    }
-
-    public get ignoreBoards(): string[] {
-        return this.getConfigValue<string[]>(configKeys.IGNORE_BOARDS);
-    }
-
-    public set ignoreBoards(value: string[]) {
-        this.setConfigValue(configKeys.IGNORE_BOARDS, value, true);
-    }
-
     public get defaultBaudRate(): number {
         return this.getConfigValue<number>(configKeys.DEFAULT_BAUD_RATE);
-    }
-
-    public get useArduinoCli(): boolean {
-        return this.getConfigValue<boolean>(configKeys.USE_ARDUINO_CLI);
-    }
-
-    public get skipHeaderProvider(): boolean {
-        return this.getConfigValue<boolean>(configKeys.SKIP_HEADER_PROVIDER);
     }
 
     public get disableIntelliSenseAutoGen(): boolean {
         return this.getConfigValue<boolean>(configKeys.DISABLE_INTELLISENSE_AUTO_GEN);
     }
 
-    public async updateAdditionalUrls(value) {
-        await this.setConfigValue(configKeys.ADDITIONAL_URLS, value, true);
+    public defaultVcloudConfig(defaultCloudKey: string): Vcloud {
+        // console.log('Get ' + defaultCloudKey + '.name');
+        this.getConfigValue<string>("ivi.cloudList.cloud1.name");
+        this.getConfigValue<string>("ivi.cloudList.cloud1.ip");
+        this.getConfigValue<string>("ivi.cloudList.cloud1.password");
+        
+        var _vcloud = new Vcloud('_name', '_ip', '_psw');
+        console.log('Default vcloud: ' + _vcloud.name + ', ' + _vcloud.ip + ', ' + _vcloud.password);
+        return _vcloud;
     }
-
+    public async updateAdditionalUrls(value) {
+        await this.setConfigValue(configKeys.IVI_DEFAULT_VCLOUD, value, true);
+    }
     public startSSHConnection() {
         console.log('Start SSH');
         var Client = require('ssh2').Client;

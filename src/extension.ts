@@ -3,6 +3,10 @@
 import * as vscode from 'vscode';
 import { VscodeSettings } from './ssh/ssh';
 
+const tempKey = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    MY_DEFAULT_VCLOUD: "ivi.cloudList"
+};
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -11,6 +15,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ivi-essential" is now active!');
     const vscodeSettings = VscodeSettings.getInstance();
+    console.log("Default vcloud: " + vscodeSettings.defaultVcloud);
+    vscodeSettings.defaultVcloudConfig(tempKey.MY_DEFAULT_VCLOUD + '.' + vscodeSettings.defaultVcloud);
     vscodeSettings.startSSHConnection();
 
 	// The command has been defined in the package.json file

@@ -14,12 +14,35 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
-        "commands": [
-            {
-                "command": "ivi-essential.helloWorld",
-                "title": "Hello World"
+        "commands": [{
+            "command": "ivi-essential.helloWorld",
+            "title": "Hello World"
+        }],
+        "configuration": {
+            "type": "object",
+            "title": "Arduino configuration",
+            "properties": {
+                "ivi.defaultVcloud": {
+                    "type": "string",
+                    "default": "cloud1"
+                },
+                "ivi.cloudList": {
+                    "type": "object",
+                    "cloud1": {
+                        "name": "thang1.vu",
+                        "ip": "10.220.48.24",
+                        "password": "123456a@A"
+                    },
+                    "cloud2": {
+                        "name": "luan1.pham",
+                        "ip": "10.220.48.24",
+                        "password": "khongcopass"
+                    }
+
+
+                }
             }
-        ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
